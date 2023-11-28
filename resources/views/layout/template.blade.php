@@ -56,6 +56,12 @@
                 <div class="navbar-nav w-100">
                     <a href="{{ url('tenan') }}" class="nav-item nav-link"><i class="fas fa-user-graduate"></i>Tenan</a>
                 </div>
+                <div class="navbar-nav w-100">
+                    <a href="{{ url('organisasi') }}" class="nav-item nav-link"><i class="fas fa-layer-group"></i>Nota</a>
+                </div>
+                <div class="navbar-nav w-100">
+                    <a href="{{ url('skill') }}" class="nav-item nav-link"><i class="fas fa-head-side-virus"></i>BarangNota</a>
+                </div>
             </nav>
         </div>
         <!-- Sidebar End -->

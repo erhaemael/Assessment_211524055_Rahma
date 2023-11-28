@@ -2,52 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tenan;
 use Illuminate\Http\Request;
+use App\Models\Tenan;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class TenanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
         $katakunci = $request->katakunci;
-        $jumlahbaris = 10;
+        $jumlahbaris = 4;
 
         if (strlen($katakunci)) {
-            $data = Tenan::where('KodeTenan', 'like', "%$katakunci%")
+            $data = Tenan::where('id', 'like', "%$katakunci%")
+                ->orWhere('KodeTenan', 'like', "%$katakunci%")
                 ->orWhere('NamaTenan', 'like', "%$katakunci%")
                 ->orWhere('HP', 'like', "%$katakunci%")
                 ->paginate($jumlahbaris);
         } else {
-            $data = Tenan::orderBy('KodeTenan', 'asc')->paginate($jumlahbaris);
+            $data = Tenan::orderBy('id', 'desc')->paginate($jumlahbaris);
         }
 
         return view('tenan.index')->with('data', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         return view('tenan.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
+        Session::flash('KodeTenan', $request->KodeTenan);
+        Session::flash('NamaTenan', $request->NamaTenan);
+        Session::flash('HP', $request->HP);
+
         $validator = Validator::make($request->all(), [
             'KodeTenan' => 'required|string|max:255',
             'NamaTenan' => 'required|string|max:255',
@@ -55,39 +45,41 @@ class TenanController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect('tenan/create')
-                ->withErrors($validator)
-                ->withInput();
+            return redirect("tenan/create")
+                        ->withErrors($validator)
+                        ->withInput();
         }
 
-        $data = $request->all();
+        $data = [
+            'KodeTenan' => $request->KodeTenan,
+            'NamaTenan' => $request->NamaTenan,
+            'HP' => $request->HP,
+        ];
 
         Tenan::create($data);
 
-        return redirect()->to('tenan')->with('success', 'Berhasil menambahkan data');
+        return redirect()->to('tenan')->with('success', 'Berhasil menambahkan data tenan');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    public function show($id)
+    {
+        $data = Tenan::find($id);
+
+        return view('tenan.show')->with('data', $data);
+    }
+
     public function edit($id)
     {
         $data = Tenan::where('id', $id)->first();
         return view('tenan.edit')->with('data', $data);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
+        Session::flash('KodeTenan', $request->KodeTenan);
+        Session::flash('NamaTenan', $request->NamaTenan);
+        Session::flash('HP', $request->HP);
+
         $validator = Validator::make($request->all(), [
             'KodeTenan' => 'required|string|max:255',
             'NamaTenan' => 'required|string|max:255',
@@ -96,35 +88,20 @@ class TenanController extends Controller
 
         if ($validator->fails()) {
             return redirect("tenan/{$id}/edit")
-                ->withErrors($validator)
-                ->withInput();
+                        ->withErrors($validator)
+                        ->withInput();
         }
 
-        $data = $request->all();
+        $data = [
+            'KodeTenan' => $request->KodeTenan,
+            'NamaTenan' => $request->NamaTenan,
+            'HP' => $request->HP,
+        ];
 
         Tenan::where('id', $id)->update($data);
-
         return redirect()->to('tenan')->with('success', 'Berhasil melakukan update data');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $data = Tenan::where('id', $id)->first();
-        return view('tenan.show')->with('data', $data);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         Tenan::where('id', $id)->delete();

@@ -2,101 +2,99 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Barang;
 use Illuminate\Http\Request;
+use App\Models\barang;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 
 class BarangController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
         $katakunci = $request->katakunci;
-        $jumlahbaris = 10;
+        $jumlahbaris = 4;
 
         if (strlen($katakunci)) {
-            $data = Barang::where('KodeBarang', 'like', "%$katakunci%")
+            $data = barang::where('id', 'like', "%$katakunci%")
+                ->orWhere('KodeBarang', 'like', "%$katakunci%")
                 ->orWhere('NamaBarang', 'like', "%$katakunci%")
                 ->orWhere('Satuan', 'like', "%$katakunci%")
                 ->orWhere('HargaSatuan', 'like', "%$katakunci%")
                 ->orWhere('Stok', 'like', "%$katakunci%")
                 ->paginate($jumlahbaris);
         } else {
-            $data = Barang::orderBy('KodeBarang', 'asc')->paginate($jumlahbaris);
+            $data = barang::orderBy('id', 'desc')->paginate($jumlahbaris);
         }
 
         return view('barang.index')->with('data', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         return view('barang.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
+        Session::flash('KodeBarang', $request->KodeBarang);
+        Session::flash('NamaBarang', $request->NamaBarang);
+        Session::flash('Satuan', $request->Satuan);
+        Session::flash('HargaSatuan', $request->HargaSatuan);
+        Session::flash('Stok', $request->Stok);
+
         $validator = Validator::make($request->all(), [
             'KodeBarang' => 'required|string|max:255',
             'NamaBarang' => 'required|string|max:255',
             'Satuan' => 'required|string|max:255',
-            'HargaSatuan' => 'required|numeric',
+            'HargaSatuan' => 'required|regex:/^[0-9]+(\.[0-9]{1,2})?$/',
             'Stok' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
-            return redirect('barang/create')
+            return redirect("barang/create")
                         ->withErrors($validator)
                         ->withInput();
         }
 
-        $data = $request->all();
+        $data = [
+            'KodeBarang' => $request->KodeBarang,
+            'NamaBarang' => $request->NamaBarang,
+            'Satuan' => $request->Satuan,
+            'HargaSatuan' => $request->HargaSatuan,
+            'Stok' => $request->Stok,
+        ];
 
-        Barang::create($data);
+        barang::create($data);
 
-        return redirect()->to('barang')->with('success', 'Berhasil menambahkan data');
+        return redirect()->to('barang')->with('success', 'Berhasil menambahkan data barang');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    public function show($id)
+    {
+        $data = barang::find($id);
+
+        return view('barang.show')->with('data', $data);
+    }
+
     public function edit($id)
     {
-        $data = Barang::where('id', $id)->first();
+        $data = barang::where('id', $id)->first();
         return view('barang.edit')->with('data', $data);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
+        Session::flash('KodeBarang', $request->KodeBarang);
+        Session::flash('NamaBarang', $request->NamaBarang);
+        Session::flash('Satuan', $request->Satuan);
+        Session::flash('HargaSatuan', $request->HargaSatuan);
+        Session::flash('Stok', $request->Stok);
+
         $validator = Validator::make($request->all(), [
             'KodeBarang' => 'required|string|max:255',
             'NamaBarang' => 'required|string|max:255',
             'Satuan' => 'required|string|max:255',
-            'HargaSatuan' => 'required|numeric',
+            'HargaSatuan' => 'required|regex:/^[0-9]+(\.[0-9]{1,2})?$/',
             'Stok' => 'required|integer',
         ]);
 
@@ -106,34 +104,21 @@ class BarangController extends Controller
                         ->withInput();
         }
 
-        $data = $request->all();
+        $data = [
+            'KodeBarang' => $request->KodeBarang,
+            'NamaBarang' => $request->NamaBarang,
+            'Satuan' => $request->Satuan,
+            'HargaSatuan' => $request->HargaSatuan,
+            'Stok' => $request->Stok,
+        ];
 
-        Barang::where('id', $id)->update($data);
-
+        barang::where('id', $id)->update($data);
         return redirect()->to('barang')->with('success', 'Berhasil melakukan update data');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $data = Barang::where('id', $id)->first();
-        return view('barang.show')->with('data', $data);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        Barang::where('id', $id)->delete();
+        barang::where('id', $id)->delete();
         return redirect()->to('barang')->with('success', 'Berhasil melakukan delete data');
     }
 }
