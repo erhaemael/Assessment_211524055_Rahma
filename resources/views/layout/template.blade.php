@@ -48,19 +48,13 @@
                     <h3 class="text-primary">PUJASERA</h3>
                 </a>
                 <div class="navbar-nav w-100">
-                    <a href="{{ url('identitas') }}" class="nav-item nav-link"><i class="fas fa-address-card"></i>Barang</a>
+                    <a href="{{ url('barang') }}" class="nav-item nav-link"><i class="fas fa-address-card"></i>Barang</a>
                   </div>
                 <div class="navbar-nav w-100">
-                    <a href="{{ url('portofolio') }}" class="nav-item nav-link"><i class="fas fa-file"></i>Kasir</a>
+                    <a href="{{ url('kasir') }}" class="nav-item nav-link"><i class="fas fa-file"></i>Kasir</a>
                 </div>
                 <div class="navbar-nav w-100">
-                    <a href="{{ url('pendidikan') }}" class="nav-item nav-link"><i class="fas fa-user-graduate"></i>Tenan</a>
-                </div>
-                <div class="navbar-nav w-100">
-                    <a href="{{ url('organisasi') }}" class="nav-item nav-link"><i class="fas fa-layer-group"></i>Nota</a>
-                </div>
-                <div class="navbar-nav w-100">
-                    <a href="{{ url('skill') }}" class="nav-item nav-link"><i class="fas fa-head-side-virus"></i>BarangNota</a>
+                    <a href="{{ url('tenan') }}" class="nav-item nav-link"><i class="fas fa-user-graduate"></i>Tenan</a>
                 </div>
             </nav>
         </div>
